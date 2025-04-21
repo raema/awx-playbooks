@@ -1,0 +1,6 @@
+- hosts: "{{ target_node }}"
+  gather_facts: false
+  tasks:
+    - reboot:
+        reboot_timeout: 1200
+      become: true
