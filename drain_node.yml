@@ -1,0 +1,22 @@
+---
+- hosts: localhost
+  gather_facts: false
+  vars:
+    target_node: "{{ target_node }}"
+    cluster_type: "{{ cluster_type }}"
+
+  tasks:
+    - name: Cordon Kubernetes node
+      when: cluster_type == 'k8s'
+      command: kubectl cordon {{ target_node }}
+
+    - name: Drain Kubernetes pods
+      when: cluster_type == 'k8s'
+      command: kubectl drain {{ target_node }} \
+                --ignore-daemonsets --delete-emptydir-data --force
+
+    - name: Mark Slurm node DRAIN
+      when: cluster_type == 'slurm'
+      command: >
+        scontrol update NodeName={{ target_node }}
+        State=DRAIN Reason="gpu-error-remediation"
