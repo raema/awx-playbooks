@@ -5,22 +5,13 @@
   vars:
     # Facts from the upstream rulebook / job template
     node:       "{{ fact.node }}"
-    cluster:    "{{ fact.cluster }}"
-    controller: "{{ fact.controller }}"
 
   tasks:
-    - name: Check node for Kubernetes pods
-      when: cluster == 'k8s'
-      shell: >
-        kubectl get pods --field-selector=spec.nodeName={{ node }} --no-headers | wc -l
-      delegate_to: "{{ controller }}"
-      register: q
-
     - name: Check node for Slurm jobs
       when: cluster == 'slurm'
       shell: >
         squeue -h -w {{ node }} | wc -l
-      delegate_to: "{{ controller }}"
+      delegate_to: fs-controller-001
       register: q
 
     - debug:
