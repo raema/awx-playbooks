@@ -4,11 +4,10 @@
 
   vars:
     # Facts from the upstream rulebook / job template
-    node:       "{{ fact.node }}"
+    node: "{{ fact.node }}"
 
   tasks:
     - name: Check node for Slurm jobs
-      when: cluster == 'slurm'
       shell: >
         squeue -h -w {{ node }} | wc -l
       delegate_to: fs-controller-001
