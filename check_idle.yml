@@ -1,21 +1,26 @@
 - hosts: localhost
   gather_facts: false
+  vars:
+    node: "{{ fact.node }}"
+    cluster: "{{ fact.cluster }}"
+
   tasks:
-    - name: query queue length
-      vars:
-        node: "{{ fact.node }}"
-        cluster: "{{ fact.cluster }}"
-      shell: |
-        {% if cluster == 'k8s' %}
+    - name: Check node for Kubernetes pods 
+      when: cluster == 'k8s'
+      shell: >
         kubectl get pods --field-selector=spec.nodeName={{ node }} --no-headers | wc -l
-        {% else %}
-        squeue -h -w {{ node }} | wc -l
-        {% endif %}
       register: q
 
-    - debug: msg="Node {{ node }} idle = {{ q.stdout|int == 0 }}"
+    - name: Check node for Slurm jobs
+      when: cluster == 'slurm'
+      shell: >
+        squeue -h -w {{ node }} | wc -l
+      register: q
+
+    - debug:
+        msg: "Node {{ node }} idle = {{ q.stdout | int == 0 }}"
 
     # mark play as 'changed' only when idle
     - set_fact:
         _dummy: true
-      changed_when: "{{ q.stdout|int == 0 }}"
+      changed_when: "{{ q.stdout | int == 0 }}"
