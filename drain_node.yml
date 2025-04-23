@@ -3,17 +3,9 @@
   gather_facts: false
   vars:
     target_node: "{{ target_node }}"
-    cluster_type: "{{ cluster_type }}"
-    controller: "{{ fact.controller }}"
 
   tasks:
-    - name: Cordon Kubernetes node
-      when: cluster_type == 'k8s'
-      command: kubectl cordon {{ target_node }}
-      delegate_to: "{{ controller }}"
-
 
     - name: Drain Slurm node
-      when: cluster_type == 'slurm'
       command: scontrol update nodename={{ target_node }} state=drain reason="gpu error remediation"
-      delegate_to: "{{ controller }}"
+      delegate_to: fs-controller-001
