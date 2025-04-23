@@ -10,13 +10,7 @@
       when: cluster_type == 'k8s'
       command: kubectl cordon {{ target_node }}
 
-    - name: Drain Kubernetes pods
-      when: cluster_type == 'k8s'
-      command: kubectl drain {{ target_node }} \
-                --ignore-daemonsets --delete-emptydir-data --force
-
-    - name: Mark Slurm node DRAIN
+    - name: Drain Slurm node
       when: cluster_type == 'slurm'
       command: >
-        scontrol update NodeName={{ target_node }}
-        State=DRAIN Reason="gpu-error-remediation"
+        scontrol update nodename={{ target_node }} state=drain reason="gpu error remediation"
