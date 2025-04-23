@@ -4,7 +4,7 @@
 
   vars:
     # Facts from the upstream rulebook / job template
-    node: "{{ fact.node }}"
+    node: "{{ fact.target_node }}"
 
   tasks:
     - name: Check node for Slurm jobs
