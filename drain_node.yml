@@ -1,6 +1,7 @@
 ---
 - hosts: localhost
   gather_facts: false
+  become: true
   vars:
     target_node: "{{ target_node }}"
 
