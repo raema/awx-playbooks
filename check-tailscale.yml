@@ -1,0 +1,9 @@
+---
+- name: Verify Tailscale-routed SSH
+  hosts: fs-controller-001
+  gather_facts: false
+
+  tasks:
+
+    - name: Confirm we can connect
+      ansible.builtin.ping:
